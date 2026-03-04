@@ -5707,7 +5707,7 @@
       if (!currentUser) return;
       try {
         order.email = currentUser.email;
-        await fetch('http://localhost:5000/api/orders', {
+        await fetch('/api/orders', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(order)
@@ -5723,7 +5723,7 @@
       if (containerMarket) containerMarket.innerHTML = '<div style="text-align:center;padding:2rem;color:#8a9e8c;">Loading orders... ⏳</div>';
 
       try {
-        const res = await fetch('http://localhost:5000/api/orders?email=' + encodeURIComponent(currentUser.email));
+        const res = await fetch('/api/orders?email=' + encodeURIComponent(currentUser.email));
         let orders = await res.json();
 
         if (!orders || !orders.length) {
@@ -5850,7 +5850,7 @@
     }
     function doGoogleAuth() {
       // Redirect to the backend Google OAuth route
-      window.location.href = 'http://localhost:5000/auth/google';
+      window.location.href = '/auth/google';
     }
 
     async function loginUser(user) {
@@ -5865,7 +5865,7 @@
       // Sync with backend if not a Google User (Google Users are already synced on callback)
       if (!user.googleAuth) {
         try {
-          const res = await fetch('http://localhost:5000/api/sync-session', {
+          const res = await fetch('/api/sync-session', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -5944,7 +5944,7 @@
       if (video) video.pause();
     }
     async function doLogout() {
-      try { await fetch('http://localhost:5000/api/logout', { credentials: 'include' }); } catch (e) { }
+      try { await fetch('/api/logout', { credentials: 'include' }); } catch (e) { }
       currentUser = null;
       clearSession();
       tipsRendered = false;
@@ -6135,7 +6135,7 @@
         // Update backend if possible
         if (plant._id) {
           try {
-            await fetch('http://localhost:5000/api/plants/' + plant._id + '/water', {
+            await fetch('/api/plants/' + plant._id + '/water', {
               method: 'POST',
               credentials: 'include'
             });
@@ -6727,7 +6727,7 @@
 
       // Save to backend
       try {
-        const res = await fetch('http://localhost:5000/api/plants', {
+        const res = await fetch('/api/plants', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -6801,7 +6801,7 @@
         let result;
         try {
           // ── Call real backend ML API ─────────────────────────────────────────
-          const apiRes = await fetch('http://localhost:5000/api/detect-disease', {
+          const apiRes = await fetch('/api/detect-disease', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ imageBase64: base64, mediaType })
@@ -6910,7 +6910,7 @@
       if (currentUser) {
         try {
           // Send to backend
-          let res = await fetch('http://localhost:5000/api/update-profile', {
+          let res = await fetch('/api/update-profile', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -6920,7 +6920,7 @@
           // If 401, attempt auto-sync and retry once
           if (res.status === 401) {
             console.log('🔄 Session expired or missing. Attempting auto-sync...');
-            const syncRes = await fetch('http://localhost:5000/api/sync-session', {
+            const syncRes = await fetch('/api/sync-session', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               credentials: 'include',
@@ -6928,7 +6928,7 @@
             });
             if (syncRes.ok) {
               // Retry the update
-              res = await fetch('http://localhost:5000/api/update-profile', {
+              res = await fetch('/api/update-profile', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -6960,7 +6960,7 @@
             if (ph && !currentUser._reminded) {
               showToast('📱 You should receive a test reminder soon if your number is correct.');
               currentUser._reminded = true;
-              fetch('http://localhost:5000/api/test-reminder', {
+              fetch('/api/test-reminder', {
                 method: 'POST',
                 credentials: 'include'
               });
@@ -7042,7 +7042,7 @@
     // ==================== STARTUP ====================
     async function checkBackendSession() {
       try {
-        const res = await fetch('http://localhost:5000/api/current_user', { credentials: 'include' });
+        const res = await fetch('/api/current_user', { credentials: 'include' });
         if (res.ok) {
           const u = await res.json();
           if (u && u.email) {
@@ -7063,7 +7063,7 @@
 
             // Sync plants to get backend _ids
             try {
-              const pRes = await fetch('http://localhost:5000/api/plants?email=' + u.email);
+              const pRes = await fetch('/api/plants?email=' + u.email);
               if (pRes.ok) {
                 const bPlants = await pRes.json();
                 const ud = getUserData(u.email);

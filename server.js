@@ -85,7 +85,8 @@ if (googleAuthEnabled) {
         passport.use(new GoogleStrategy({
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: `http://localhost:${PORT}/auth/google/callback`
+            callbackURL: '/auth/google/callback',
+            proxy: true
         },
             async function (accessToken, refreshToken, profile, cb) {
                 try {
