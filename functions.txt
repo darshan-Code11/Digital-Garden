@@ -1,0 +1,92 @@
+4976: async function saveOrderHistory(order) {
+4990: async function getOrderHistory() {
+5001: async function renderOrderHistory() {
+5051: function saveUserDB() {
+5054: function loadUserDB() {
+5057: function getUserData(email) {
+5068: function getUsers() {
+5071: function saveUsers(u) {
+5074: function saveSession(user) {
+5077: function loadSession() {
+5080: function clearSession() {
+5085: function switchAuthTab(tab) {
+5091: function showAuthError(id, msg) {
+5095: function doLogin() {
+5111: function doRegister() {
+5126: function doGoogleAuth() {
+5130: function loginUser(user) {
+5145: function doLogout() {
+5152: function toggleUserDropdown() {
+5159: function closeUserDropdown() {
+5167: function updateNavUser() {
+5179: function updateProfilePage() {
+5210: function init() {
+5225: function updateStats(ud) {
+5234: function renderTaskList(ud) {
+5247: function markTaskDone(id, ud, el) {
+5258: function lighten(hex) { return '#' + hex.replace(/^#/, '').match(/.{2}/g).map(c => Math.min(255, parseInt(c, 16) + 40).toString(16).padStart(2, '0')).join(''); }
+5260: function renderPlantGrid(cid, arr, max) {
+5289: function renderHomePlants(ud) {
+5294: function renderPlantsPage() {
+5301: function renderPlantFilters(ud) {
+5309: function waterPlant(e, id) {
+5322: function openPlantDetail(id) {
+5357: function waterPlantFromDetail(id) {
+5363: function closeDetail() { document.getElementById('detailOverlay').classList.remove('open'); document.body.style.overflow = ''; }
+5364: function closeDetailOutside(e) { if (e.target === document.getElementById('detailOverlay')) closeDetail(); }
+5367: function renderTimeline(selId, evId) {
+5378: function showTL(el, key) {
+5387: function renderCommunity() {
+5397: function likePost(el) { const n = parseInt(el.textContent.split(' ')[1]) + 1; el.textContent = `❤️ ${n}`; el.style.transform = 'scale(1.5)'; setTimeout(() => el.style.transform = '', 300); }
+5400: function renderHarvest(tbodyId) {
+5412: function renderTipsMarquee() {
+5418: function renderTipsPage() {
+5449: function openGuide(id) {
+5475: function closeGuideModal() { document.getElementById('guideModalOverlay').classList.remove('open'); document.body.style.overflow = ''; }
+5476: function closeGuideModalOutside(e) { if (e.target === document.getElementById('guideModalOverlay')) closeGuideModal(); }
+5479: function renderProfileAchievements() {
+5490: function renderMarket() {
+5507: function renderMarketGrid() {
+5547: function openProductDetail(id) {
+5588: function closeProductDetail() { document.getElementById('prodModalOverlay').classList.remove('open'); document.body.style.overflow = ''; }
+5589: function closeProdModalOutside(e) { if (e.target === document.getElementById('prodModalOverlay')) closeProductDetail(); }
+5590: function changeProdQty(delta) {
+5596: function addToCartFromModal(id) {
+5605: function addToWishlist(id, btn) {
+5611: function addToCart(id, btn) {
+5619: function changeQty(id, delta) { const item = cart.find(c => c.id === id); if (!item) return; item.qty += delta; if (item.qty <= 0) removeFromCart(id); else { updateCartUI(); renderCartPanel(); } }
+5620: function removeFromCart(id) { cart = cart.filter(c => c.id !== id); updateCartUI(); renderCartPanel(); renderMarketGrid(); }
+5621: function toggleCart() { document.getElementById('cartPanel').classList.toggle('open'); renderCartPanel(); }
+5622: function updateCartUI() {
+5627: function renderCartPanel() {
+5642: function checkoutCart() {
+5678: function openPayModal(plan) {
+5691: function closePayModal() {
+5701: function closePayModalOutside(e) { if (e.target === document.getElementById('payModalOverlay')) closePayModal(); }
+5702: function switchPlan(plan) {
+5713: function selectPayMethod(el, method) {
+5719: function selectBank(el, name) {
+5723: function selectWallet(el, name) {
+5727: function selectUpiApp(el, name) {
+5733: function copyUpiId() {
+5740: function verifyUpi() {
+5749: function formatCard(el) { let v = el.value.replace(/\D/g, '').slice(0, 16); el.value = v.replace(/(.{4})/g, '$1 ').trim(); }
+5750: function formatExpiry(el) { let v = el.value.replace(/\D/g, ''); if (v.length > 2) v = v.slice(0, 2) + ' / ' + v.slice(2, 4); el.value = v; }
+5752: function processPayment(method) {
+5822: function renderPaySuccess(title, desc, details) {
+5834: function openModal() {
+5838: function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); document.body.style.overflow = ''; }
+5839: function closeModalOutside(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
+5840: function selectEmoji(el) { document.querySelectorAll('.emoji-opt').forEach(e => e.classList.remove('selected')); el.classList.add('selected'); selectedEmoji = el.dataset.emoji; }
+5841: function selectStage(el) { document.querySelectorAll('.stage-chip').forEach(e => e.classList.remove('selected')); el.classList.add('selected'); selectedStage = el.textContent; }
+5842: function setTodayDate() { const d = document.getElementById('plantDate'); if (d) d.value = new Date().toISOString().split('T')[0]; }
+5843: function addPlant() {
+5859: function globalSearch(q) {
+5868: function simulateDetect() { document.getElementById('fileInput').click(); }
+5869: function processImage(e) {
+5885: function showPage(page) {
+5901: function copySaleCode(el) {
+5906: function subscribeNewsletter() {
+5912: function showToast(msg) {
+5916: function createLeaves() {
+5928: function initCursorParticles() {

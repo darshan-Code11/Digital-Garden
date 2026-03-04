@@ -1,0 +1,11 @@
+5185: document.addEventListener('click', e => {
+5310: card.querySelector('.plant-body').addEventListener('click', e => { if (!e.target.classList.contains('water-btn')) openPlantDetail(p.id); });
+5311: card.querySelector('.plant-img').addEventListener('click', () => openPlantDetail(p.id));
+6019: document.addEventListener('mousemove', e => {
+6052: window.addEventListener('DOMContentLoaded', () => {
+6071: document.getElementById('loginPassword').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+6072: document.getElementById('regEmail').addEventListener('keydown', e => { if (e.key === 'Enter') doRegister(); });
+6073: document.getElementById('loginEmail').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+6074: document.getElementById('regPassword').addEventListener('keydown', e => { if (e.key === 'Enter') doRegister(); });
+6077: document.addEventListener('keydown', e => {
+6082: document.addEventListener('DOMContentLoaded', function () {

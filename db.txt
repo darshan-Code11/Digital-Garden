@@ -1,0 +1,6 @@
+5051: function saveUserDB() {
+5251: saveUserDB(); el.style.opacity = '.4'; el.style.textDecoration = 'line-through';
+5315: saveUserDB(); updateStats(ud);
+5359: ud.wateredToday = (ud.wateredToday || 0) + 1; saveUserDB(); updateStats(ud);
+5812: saveUserDB(); updateProfilePage();
+5851: saveUserDB(); renderHomePlants(ud);
