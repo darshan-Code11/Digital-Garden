@@ -4306,12 +4306,8 @@
 
     .video-overlay video {
       width: 100%;
-      height: auto;
-      max-height: 80vh;
-      object-fit: contain;
-      /* Soften edges to blend naturally with the cream background */
-      mask-image: radial-gradient(circle, black 60%, transparent 95%);
-      -webkit-mask-image: radial-gradient(circle, black 60%, transparent 95%);
+      height: 100%;
+      object-fit: cover;
       transform: scale(1.1);
       opacity: 0;
       transition: all 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
