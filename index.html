@@ -4071,10 +4071,11 @@
 
       /* Navigation */
       nav {
-        padding: 0.8rem 1rem;
+        padding: 0.8rem 1.2rem;
         flex-wrap: wrap;
         gap: 0.8rem;
         height: auto;
+        align-items: center;
       }
 
       .nav-links {
@@ -4099,7 +4100,9 @@
       }
 
       .nav-right {
-        gap: 0.6rem;
+        gap: 1.5rem;
+        justify-content: flex-end;
+        flex: 1;
       }
 
       /* Search bar mobile behavior */
@@ -7060,14 +7063,23 @@
                 const bPlants = await pRes.json();
                 const ud = getUserData(u.email);
                 bPlants.forEach(bp => {
-                  const lp = ud.plants.find(p => p.name === bp.name && p.variety === bp.variety);
+                  const lp = ud.plants.find(p => p.id === bp.id || (p.name === bp.name && p.variety === bp.variety));
                   if (lp) {
                     lp._id = bp._id;
                     lp.waterFrequencyDays = bp.waterFrequencyDays;
                     lp.lastWatered = bp.lastWatered;
+                    lp.progress = bp.progress || lp.progress;
+                    lp.stage = bp.stage || lp.stage;
+                  } else {
+                    // Add missing plant from backend
+                    ud.plants.push(bp);
                   }
                 });
                 saveUserDB();
+                updateStats(ud);
+                renderHomePlants(ud);
+                renderHarvest('harvestBody');
+                renderHarvest('harvestBody2');
                 if (document.getElementById('page-plants').classList.contains('active')) renderPlantsPage();
               }
             } catch (err) { console.warn('Plant sync failed', err); }
@@ -7085,6 +7097,7 @@
         currentUser = session;
         document.getElementById('authScreen').classList.add('hidden');
         updateNavUser(); updateProfilePage(); init();
+        checkBackendSession(); // Sync with backend to ensure data consistency
       } else if (urlParams.get('login') === 'success') {
         window.history.replaceState({}, document.title, window.location.pathname);
         document.getElementById('authScreen').classList.add('hidden');
