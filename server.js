@@ -25,6 +25,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // MongoDB Connection
+if (!process.env.MONGO_URI) {
+    console.error('❌ FATAL ERROR: MONGO_URI is missing from environment variables!');
+    console.error('👉 If deploying on Render, make sure to add MONGO_URI in the Environment tab.');
+    process.exit(1);
+}
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB successfully connected!'))
     .catch((err) => console.error('MongoDB connection error:', err));
@@ -762,49 +767,38 @@ async function sendReminder(to, plantName) {
     }
 }
 
-// Background Task: Check for plants (Runs every minute for accuracy)
+// Background Task: Check for plants (Optimized for memory)
 cron.schedule('* * * * *', async () => {
     const now = new Date();
-    const currentHour = now.getHours().toString().padStart(2, '0');
-    const currentMin = now.getMinutes().toString().padStart(2, '0');
-    const currentTimeString = `${currentHour}:${currentMin}`;
+    const currentTimeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
     console.log(`⏰ Cron tick at ${currentTimeString} – checking reminders...`);
+
     try {
-        const plants = await Plant.find().populate('userId');
+        // Only fetch plants that need a reminder AT THIS MINUTE
+        const plants = await Plant.find({ reminderTime: currentTimeString }).populate('userId');
+
+        if (plants.length === 0) return;
 
         for (const plant of plants) {
-            const preferredTime = plant.reminderTime || '09:00';
-            if (preferredTime !== currentTimeString) continue;
             if (!plant.waterFrequencyDays) continue;
 
             const lastWatered = plant.lastWatered || plant._id.getTimestamp();
-            const diffMs = now - lastWatered;
-            const diffDays = diffMs / (1000 * 60 * 60 * 24); // fractional days
-            // Send reminder if plant is due (>= waterFrequencyDays) OR if it's the very first reminder (< 1 day old means just added)
+            const diffDays = (now - lastWatered) / (1000 * 60 * 60 * 24);
+
+            // Send reminder if plant is due OR if it's the very first reminder (added today)
             const isDue = diffDays >= plant.waterFrequencyDays;
-            const isFirstReminder = diffMs < 1000 * 60 * 60 * 24; // plant added today
-            if (!isDue && !isFirstReminder) {
-                console.log(`⏭️  Skipping ${plant.name} — ${diffDays.toFixed(1)} days since water, needs ${plant.waterFrequencyDays}`);
-                continue;
-            }
+            const isFirstReminder = (now - lastWatered) < (1000 * 60 * 60 * 24);
 
-            // Try to get phone from populated userId
-            let phone = plant.userId && plant.userId.phoneNumber ? plant.userId.phoneNumber : null;
+            if (isDue || isFirstReminder) {
+                let phone = (plant.userId && plant.userId.phoneNumber) ? plant.userId.phoneNumber : plant.email; // Fallback to email as marker if needed
 
-            // FALLBACK: look up user by email if userId didn't have a phone
-            if (!phone && plant.email) {
-                const userByEmail = await User.findOne({ email: { $regex: new RegExp('^' + plant.email + '$', 'i') } });
-                if (userByEmail && userByEmail.phoneNumber) {
-                    phone = userByEmail.phoneNumber;
-                    console.log(`📧 Found phone via email lookup for plant: ${plant.name}`);
+                if (phone && phone.includes('+')) { // Basic check for phone format
+                    console.log(`📲 Sending reminder for ${plant.name} to ${phone}`);
+                    await sendReminder(phone, plant.name);
+                    // Update lastWatered so we don't spam if cron double-fires
+                    plant.lastWatered = now;
+                    await plant.save();
                 }
-            }
-
-            if (phone) {
-                console.log(`📲 Sending reminder for ${plant.name} to ${phone}`);
-                await sendReminder(phone, plant.name);
-            } else {
-                console.warn(`⚠️  No phone number found for plant "${plant.name}" (email: ${plant.email || 'none'})`);
             }
         }
     } catch (err) {
