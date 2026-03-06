@@ -15,6 +15,7 @@ require('dotenv').config();
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const app = express();
+app.set('trust proxy', 1); // Trust Render's proxy for secure cookies and OAuth
 const PORT = process.env.PORT || 5000;
 
 // Middleware

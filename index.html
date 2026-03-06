@@ -4374,7 +4374,7 @@
 
   <!-- LOGIN VIDEO OVERLAY -->
   <div class="video-overlay" id="loginVideoOverlay">
-    <video id="loginVideo" playsinline muted preload="auto">
+    <video id="loginVideo" playsinline muted preload="auto" poster="logo.png">
       <source src="garden.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
@@ -4870,7 +4870,7 @@
   <!-- ============ HOME PAGE ============ -->
   <div class="page active" id="page-home">
     <div class="hero">
-      <video autoplay muted loop playsinline preload="auto" class="hero-video">
+      <video autoplay muted loop playsinline preload="auto" poster="logo.png" class="hero-video">
         <source src="Seed_grows_under_sun_delpmaspu_.mp4" type="video/mp4">
       </video>
       <div class="hero-badge">🌿 Your Personal Digital Gardening Journal</div>
@@ -5905,34 +5905,27 @@
       const video = document.getElementById('loginVideo');
       if (!overlay || !video) return;
 
-      // Mobile Optimization: Check screen width and swap video source
+      // Swap source ONLY if needed (avoids double loading)
       const isMobile = window.innerWidth <= 768;
-      const currentSrc = video.currentSrc || video.src;
-      const mobileVideo = 'logo_animation_mobile.mp4';
-      const desktopVideo = 'garden.mp4';
+      const targetSrc = isMobile ? 'logo_animation_mobile.mp4' : 'garden.mp4';
 
-      if (isMobile && !currentSrc.includes(mobileVideo)) {
-        video.src = mobileVideo;
-        video.load();
-      } else if (!isMobile && !currentSrc.includes(desktopVideo)) {
-        video.src = desktopVideo;
-        video.load();
+      if (!video.src.includes(targetSrc)) {
+        video.src = targetSrc;
       }
 
       overlay.classList.add('show');
       video.muted = true;
       video.currentTime = 0;
 
+      // Start playing
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.catch(err => {
-          console.warn('Video autoplay failed:', err);
-          // If it fails, close overlay so user isn't stuck
-          setTimeout(closeLoginVideo, 500);
+          console.warn('Autoplay failed:', err);
+          setTimeout(closeLoginVideo, 800);
         });
       }
 
-      // Automatically close when video ends
       video.onended = closeLoginVideo;
     }
 
