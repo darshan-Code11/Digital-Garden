@@ -890,5 +890,22 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`-------------------------------------------\n`);
 });
 
-// Force node to stay alive
-setInterval(() => { }, 1000 * 60 * 60);
+// ── KEEP-ALIVE MECHANISM ────────────────────────────────────
+// Render Free Tier sleeps after 15 mins of inactivity. 
+// This pings the public URL every 10 mins to keep it awake.
+const RENDER_EXTERNAL_URL = process.env.RENDER_EXTERNAL_URL;
+
+if (RENDER_EXTERNAL_URL) {
+    console.log(`📡 Self-ping active for: ${RENDER_EXTERNAL_URL}`);
+    setInterval(async () => {
+        try {
+            const response = await fetch(`${RENDER_EXTERNAL_URL}/api/health`);
+            console.log(`🔄 Keep-alive ping status: ${response.status} (${new Date().toLocaleTimeString()})`);
+        } catch (err) {
+            console.error('❌ Keep-alive ping failed:', err.message);
+        }
+    }, 10 * 60 * 1000); // Every 10 minutes
+} else {
+    // Local development or URL not set
+    setInterval(() => { }, 1000 * 60 * 60);
+}
