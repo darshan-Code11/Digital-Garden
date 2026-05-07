@@ -2,27 +2,240 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - DailyGarden</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap');
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
-    body { background: #fdfbf7; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-    
-    /* AUTH OVERLAY CSS */
-    
-    
-    /* Standalone overrides */
-    .auth-screen { position: relative; background: transparent; backdrop-filter: none; z-index: 1; align-items: center; }
-    .auth-box { box-shadow: 0 20px 40px rgba(0,0,0,0.08); width: 450px; max-width: 90vw; }
-    #loginVideoContainer { z-index: 100; }
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700&display=swap');
+
+    :root {
+      --soil: #3d2b1f;
+      --cream: #faf6ee;
+      --forest: #2d5a27;
+      --sage: #7a9e7e;
+      --moss: #4a7c44;
+      --panel: #ffffff;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #fdfbf7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      overflow: hidden;
+      padding: 1rem;
+    }
+
+    .auth-screen {
+      width: 100%;
+      max-width: 440px;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .auth-box {
+      background: white;
+      color: var(--soil);
+      border-radius: 32px;
+      padding: 2.5rem;
+      width: 100%;
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .auth-logo-icon {
+      font-size: 2.2rem;
+      display: inline-block;
+    }
+
+    .auth-logo-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--forest);
+    }
+
+    .auth-tagline {
+      font-size: 0.88rem;
+      color: #8a9e8c;
+      margin-bottom: 2rem;
+    }
+
+    .auth-tab-row {
+      display: flex;
+      background: #f0f0ec;
+      border-radius: 50px;
+      padding: 0.28rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      padding: 0.55rem;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: #8a9e8c;
+      transition: all 0.25s;
+      border: none;
+      background: none;
+    }
+
+    .auth-tab.active {
+      background: white;
+      color: var(--forest);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .auth-input-group {
+      position: relative;
+    }
+
+    .auth-input {
+      border: 1.5px solid rgba(122, 158, 126, 0.25);
+      border-radius: 12px;
+      padding: 0.75rem 1rem 0.75rem 2.6rem;
+      font-size: 0.9rem;
+      color: var(--soil);
+      background: var(--cream);
+      transition: all 0.2s;
+      outline: none;
+      width: 100%;
+    }
+
+    .auth-input:focus {
+      border-color: var(--sage);
+      background: white;
+    }
+
+    .auth-input-icon {
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+    }
+
+    .auth-btn-primary {
+      background: linear-gradient(135deg, var(--forest), var(--moss));
+      color: white;
+      border: none;
+      cursor: pointer;
+      padding: 0.88rem;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: all 0.25s;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+
+    .auth-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(45, 90, 39, 0.3);
+    }
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      color: #ccc;
+      font-size: 0.8rem;
+      margin: 1.2rem 0;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e8e8e0;
+    }
+
+    .auth-google-btn {
+      background: white;
+      border: 1.5px solid #e0e0e0;
+      cursor: pointer;
+      padding: 0.75rem;
+      border-radius: 14px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.25s;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.7rem;
+      color: #3c4043;
+    }
+
+    .auth-google-btn:hover {
+      border-color: #4285f4;
+      background: #f8faff;
+    }
+
+    .auth-error {
+      color: #d93025;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+      display: none;
+      text-align: center;
+    }
+
+    .auth-footer {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #8a9e8c;
+    }
+
+    .auth-footer strong {
+      color: var(--forest);
+      cursor: pointer;
+    }
+
+    /* Video container */
+    #loginVideoContainer {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 9999;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    #loginVideo { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1s; }
+    #loadingText { position: absolute; bottom: 15%; color: #fff; font-size: 1.5rem; letter-spacing: 3px; opacity: 0; transition: opacity 1s; font-weight: 300; }
   </style>
 </head>
 <body>
 
-  <div class="auth-screen " id="authScreen">
+  <div class="auth-screen">
     <div class="auth-box">
-      <button onclick="closeAuthScreen()" id="authCloseBtn"
-        style="position:absolute;top:1rem;right:1rem;background:rgba(122,158,126,.15);border:none;cursor:pointer;width:32px;height:32px;border-radius:50%;font-size:1rem;display:flex;align-items:center;justify-content:center;color:var(--moss);transition:all .2s;z-index:10">✕</button>
       <div class="auth-logo">
         <span class="auth-logo-icon">🌱</span>
         <span class="auth-logo-text">DailyGarden</span>
@@ -43,56 +256,54 @@
           </div>
           <div class="auth-input-group">
             <span class="auth-input-icon">🔒</span>
-            <input class="auth-input" type="password" id="loginPassword" placeholder="Password"
-              autocomplete="current-password">
+            <input class="auth-input" type="password" id="loginPass" placeholder="Enter password">
           </div>
-          <div class="auth-error" id="loginError"></div>
-          <button class="auth-btn-primary" onclick="doLogin()">Sign In →</button>
+          <button class="auth-btn-primary" onclick="doLogin()">Sign In &rarr;</button>
+          
+          <div class="auth-divider">or</div>
+          
+          <button class="auth-google-btn" id="googleLoginBtn">
+            <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="18" alt="Google">
+            Continue with Google
+          </button>
         </div>
-        <div class="auth-divider">or</div>
-        <button class="auth-google-btn" onclick="doGoogleAuth()">
-          <div class="google-icon"></div>
-          Continue with Google
-        </button>
-        <div class="auth-footer-text">New here? Switch to <b style="cursor:pointer;color:var(--forest)"
-            onclick="switchAuthTab('register')">Create Account</b> to register.</div>
+        <div class="auth-footer">
+          New here? Switch to <strong onclick="switchAuthTab('register')">Create Account</strong> to register.
+        </div>
       </div>
 
       <!-- REGISTER FORM -->
       <div id="registerForm" style="display:none">
         <div class="auth-form">
           <div class="auth-input-group">
-            <span class="auth-input-icon">🧑‍🌾</span>
-            <input class="auth-input" type="text" id="regName" placeholder="Your full name" autocomplete="name">
+            <span class="auth-input-icon">👤</span>
+            <input class="auth-input" type="text" id="regName" placeholder="Full Name">
           </div>
           <div class="auth-input-group">
             <span class="auth-input-icon">📧</span>
-            <input class="auth-input" type="email" id="regEmail" placeholder="your@email.com" autocomplete="email">
+            <input class="auth-input" type="email" id="regEmail" placeholder="Email Address">
           </div>
-          <div class="auth-input-group">
-            <span class="auth-input-icon">🔒</span>
-            <input class="auth-input" type="password" id="regPassword" placeholder="Create a password (min 6 chars)"
-              autocomplete="new-password">
-          </div>
-          <div class="auth-input-group">
-            <span class="auth-input-icon">📍</span>
-            <input class="auth-input" type="text" id="regCity" placeholder="City (e.g. Bengaluru)" autocomplete="off">
-          </div>
-          <div class="auth-error" id="registerError"></div>
-          <button class="auth-btn-primary" onclick="doRegister()">Create Account 🌱</button>
+          <button class="auth-btn-primary" onclick="doRegister()">Create Account &rarr;</button>
+          
+          <div class="auth-divider">or</div>
+          
+          <button class="auth-google-btn" id="googleRegBtn">
+            <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="18" alt="Google">
+            Sign up with Google
+          </button>
         </div>
-        <div class="auth-divider">or</div>
-        <button class="auth-google-btn" onclick="doGoogleAuth()">
-          <div class="google-icon"></div>
-          Continue with Google
-        </button>
+        <div class="auth-footer">
+          Already have an account? <strong onclick="switchAuthTab('login')">Sign In</strong>
+        </div>
       </div>
+
+      <div id="authError" class="auth-error"></div>
     </div>
   </div>
 
-  <div id="loginVideoContainer" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000; z-index:9999; flex-direction:column; justify-content:center; align-items:center;">
-    <video id="loginVideo" src="https://videos.pexels.com/video-files/5267439/5267439-hd_1920_1080_30fps.mp4" playsinline style="width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 1s ease-in-out;"></video>
-    <div id="loadingText" style="position:absolute; bottom:15%; color:#fff; font-family:'Outfit',sans-serif; font-size:1.5rem; letter-spacing:3px; opacity:0; transition:opacity 1s ease-in-out; font-weight:300;">GROWING YOUR GARDEN...</div>
+  <div id="loginVideoContainer">
+    <video id="loginVideo" src="https://videos.pexels.com/video-files/5267439/5267439-hd_1920_1080_30fps.mp4" playsinline></video>
+    <div id="loadingText">GROWING YOUR GARDEN...</div>
   </div>
 
   <script>
@@ -101,6 +312,7 @@
       document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
       document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
       document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+      document.getElementById('authError').style.display = 'none';
     }
 
     function showAuthError(msg) {
@@ -126,6 +338,7 @@
     async function doLogin() {
       const email = document.getElementById('loginEmail').value.trim();
       if (!email) return showAuthError('Please enter an email.');
+      // Simple local storage mock for now, backend will handle session
       let users = JSON.parse(localStorage.getItem('gardenlog_users') || '{}');
       if (!users[email]) return showAuthError('Account not found.');
       sessionStorage.setItem('gardenlog_session', JSON.stringify(users[email]));
