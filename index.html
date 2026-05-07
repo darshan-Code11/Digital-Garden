@@ -5769,7 +5769,7 @@
       if (callback) window._authCallback = callback;
     }
     function closeAuthScreen() {
-      document.getElementById('authScreen').classList.add('hidden');
+      if(document.getElementById('authScreen')) document.getElementById('authScreen').classList.add('hidden');
       window._authCallback = null;
     }
     function switchAuthTab(tab) {
@@ -5825,7 +5825,7 @@
       currentUser = user;
       saveSession(user);
       loadUserDB();
-      document.getElementById('authScreen').classList.add('hidden');
+      if(document.getElementById('authScreen')) document.getElementById('authScreen').classList.add('hidden');
 
       // Sync with backend if not a Google User (Google Users are already synced on callback)
       if (!user.googleAuth) {
@@ -7244,16 +7244,16 @@
 
       if (session) {
         currentUser = session;
-        document.getElementById('authScreen').classList.add('hidden');
+        if(document.getElementById('authScreen')) document.getElementById('authScreen').classList.add('hidden');
         updateNavUser(); updateProfilePage(); init();
         checkBackendSession(); // Sync with backend to ensure data consistency
       } else if (urlParams.get('login') === 'success') {
         window.history.replaceState({}, document.title, window.location.pathname);
-        document.getElementById('authScreen').classList.add('hidden');
+        if(document.getElementById('authScreen')) document.getElementById('authScreen').classList.add('hidden');
         updateNavUser();
         checkBackendSession();
       } else {
-        document.getElementById('authScreen').classList.add('hidden');
+        if(document.getElementById('authScreen')) document.getElementById('authScreen').classList.add('hidden');
         updateNavUser();
         checkBackendSession();
       }
