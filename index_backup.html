@@ -4385,7 +4385,76 @@
   </div>
 
   <!-- ============ AUTH SCREEN ============ -->
-  
+  <div class="auth-screen hidden" id="authScreen">
+    <div class="auth-box">
+      <button onclick="closeAuthScreen()" id="authCloseBtn"
+        style="position:absolute;top:1rem;right:1rem;background:rgba(122,158,126,.15);border:none;cursor:pointer;width:32px;height:32px;border-radius:50%;font-size:1rem;display:flex;align-items:center;justify-content:center;color:var(--moss);transition:all .2s;z-index:10">✕</button>
+      <div class="auth-logo">
+        <span class="auth-logo-icon">🌱</span>
+        <span class="auth-logo-text">DailyGarden</span>
+      </div>
+      <div class="auth-tagline">Your personal digital gardening journal</div>
+
+      <div class="auth-tab-row">
+        <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Create Account</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="loginForm">
+        <div class="auth-form">
+          <div class="auth-input-group">
+            <span class="auth-input-icon">📧</span>
+            <input class="auth-input" type="email" id="loginEmail" placeholder="your@email.com" autocomplete="email">
+          </div>
+          <div class="auth-input-group">
+            <span class="auth-input-icon">🔒</span>
+            <input class="auth-input" type="password" id="loginPassword" placeholder="Password"
+              autocomplete="current-password">
+          </div>
+          <div class="auth-error" id="loginError"></div>
+          <button class="auth-btn-primary" onclick="doLogin()">Sign In →</button>
+        </div>
+        <div class="auth-divider">or</div>
+        <button class="auth-google-btn" onclick="doGoogleAuth()">
+          <div class="google-icon"></div>
+          Continue with Google
+        </button>
+        <div class="auth-footer-text">New here? Switch to <b style="cursor:pointer;color:var(--forest)"
+            onclick="switchAuthTab('register')">Create Account</b> to register.</div>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="registerForm" style="display:none">
+        <div class="auth-form">
+          <div class="auth-input-group">
+            <span class="auth-input-icon">🧑‍🌾</span>
+            <input class="auth-input" type="text" id="regName" placeholder="Your full name" autocomplete="name">
+          </div>
+          <div class="auth-input-group">
+            <span class="auth-input-icon">📧</span>
+            <input class="auth-input" type="email" id="regEmail" placeholder="your@email.com" autocomplete="email">
+          </div>
+          <div class="auth-input-group">
+            <span class="auth-input-icon">🔒</span>
+            <input class="auth-input" type="password" id="regPassword" placeholder="Create a password (min 6 chars)"
+              autocomplete="new-password">
+          </div>
+          <div class="auth-input-group">
+            <span class="auth-input-icon">📍</span>
+            <input class="auth-input" type="text" id="regCity" placeholder="City (e.g. Bengaluru)" autocomplete="off">
+          </div>
+          <div class="auth-error" id="registerError"></div>
+          <button class="auth-btn-primary" onclick="doRegister()">Create Account 🌱</button>
+        </div>
+        <div class="auth-divider">or</div>
+        <button class="auth-google-btn" onclick="doGoogleAuth()">
+          <div class="google-icon"></div>
+          Continue with Google
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- CART SIDEBAR -->
   <div class="cart-panel" id="cartPanel">
@@ -4401,91 +4470,59 @@
   </div>
 
   <!-- ADD PLANT MODAL -->
-  
-  <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)" style="background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);">
-    <div class="modal" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.6); max-width: 520px; border-radius: 24px; padding: 2rem; box-shadow: 0 24px 48px rgba(0,0,0,0.1);">
-      
-      <h2 style="text-align: center; color: var(--primary); font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 1.5rem;">Add New Plant</h2>
-      
-      <!-- Search Database Section -->
-      <div style="background: rgba(255,255,255,0.6); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; position: relative; border: 1px solid rgba(255,255,255,0.8);">
-        <label style="display:block; text-align:center; font-weight: 600; font-size: 1.2rem; color: #1a3d1a; margin-bottom: 0.8rem;">Search Plant Database</label>
-        <div style="position: relative;">
-          <span style="position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:#8a9e8c;">🔍</span>
-          <input type="text" id="plantSearchDb" placeholder="thousands of plants..." style="width:100%; padding: 0.8rem 1rem 0.8rem 2.5rem; border-radius: 12px; border: 1px solid #c8d8c8; font-size: 1rem; outline: none; transition: border-color 0.2s; background: rgba(255,255,255,0.9);" oninput="searchPlantDb(this.value)" onfocus="searchPlantDb(this.value)" onblur="setTimeout(() => document.getElementById('dbDropdown').style.display='none', 200)">
-          
-          <!-- Dropdown -->
-          <div id="dbDropdown" style="display:none; position:absolute; top:100%; left:0; right:0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 12px; border: 1px solid #c8d8c8; box-shadow: 0 8px 24px rgba(0,0,0,0.1); margin-top: 0.5rem; z-index: 100; max-height: 200px; overflow-y: auto;">
-          </div>
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+    <div class="modal">
+      <h2>🌱 Add New Plant</h2>
+      <p class="modal-sub">Track a new plant in your garden</p>
+      <div class="form-group"><label>Choose Plant</label>
+        <div class="emoji-picker" id="emojiPicker">
+          <span class="emoji-opt selected" data-emoji="🍅" onclick="selectEmoji(this)">🍅</span>
+          <span class="emoji-opt" data-emoji="🌶️" onclick="selectEmoji(this)">🌶️</span>
+          <span class="emoji-opt" data-emoji="🥬" onclick="selectEmoji(this)">🥬</span>
+          <span class="emoji-opt" data-emoji="🌿" onclick="selectEmoji(this)">🌿</span>
+          <span class="emoji-opt" data-emoji="🌸" onclick="selectEmoji(this)">🌸</span>
+          <span class="emoji-opt" data-emoji="🥕" onclick="selectEmoji(this)">🥕</span>
+          <span class="emoji-opt" data-emoji="🌻" onclick="selectEmoji(this)">🌻</span>
+          <span class="emoji-opt" data-emoji="🍃" onclick="selectEmoji(this)">🍃</span>
+          <span class="emoji-opt" data-emoji="🫑" onclick="selectEmoji(this)">🫑</span>
+          <span class="emoji-opt" data-emoji="🍓" onclick="selectEmoji(this)">🍓</span>
         </div>
       </div>
-
-      <!-- Selected Plant Card -->
-      <div style="background: rgba(255,255,255,0.6); border-radius: 20px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.8); margin-bottom: 1.5rem;">
-        <div style="display: flex; gap: 1.5rem; align-items: stretch; margin-bottom: 1.2rem;">
-          <div id="selectedPlantIcon" style="width: 120px; height: 120px; background: #eaf4e6; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 4rem; flex-shrink: 0; box-shadow: inset 0 4px 12px rgba(0,0,0,0.05); user-select:none;">
-            🌿
-          </div>
-          <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 0.6rem;">
-            <div style="display: flex; gap: 1rem;">
-              <div style="flex:1;">
-                <label style="font-size: 0.8rem; color: #8a9e8c; display:block; margin-bottom: 0.2rem;">Plant Name</label>
-                <input type="text" id="plantName" placeholder="e.g. Aloe Vera" style="width:100%; padding: 0.5rem; border-radius: 8px; border: 1px solid #e0e8e0; background: rgba(255,255,255,0.8);">
-              </div>
-              <div style="flex:1;">
-                <label style="font-size: 0.8rem; color: #8a9e8c; display:block; margin-bottom: 0.2rem;">Plant Nickname</label>
-                <input type="text" id="plantVariety" placeholder="e.g. Bedroom Healer" style="width:100%; padding: 0.5rem; border-radius: 8px; border: 1px solid #e0e8e0; background: rgba(255,255,255,0.8);">
-              </div>
-            </div>
-            <div style="font-size: 0.85rem; color: #4a5c4a; font-style: italic;" id="scientificName">Scientific Name: <span>Unknown</span></div>
-            
-            <div style="margin-top: 0.4rem;">
-              <label style="font-size: 0.8rem; color: #8a9e8c; display:block; margin-bottom: 0.4rem;">Health Benefits</label>
-              <div id="healthBenefitsContainer" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                <div style="font-size:0.75rem; color:#8a9e8c; font-style:italic;">Select a plant from the database</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-          <div style="flex: 1; min-width: 140px;">
-            <label style="font-size: 0.85rem; color: #4a5c4a; display:block; margin-bottom: 0.4rem;">Location</label>
-            <select id="gardenType" style="width:100%; padding: 0.6rem; border-radius: 8px; border: 1px solid #e0e8e0; background: rgba(255,255,255,0.8); outline:none;">
-              <option>🛋️ Living Room</option>
-              <option>🛏️ Bedroom</option>
-              <option>☀️ Balcony</option>
-              <option>🌳 Backyard</option>
-              <option>🪴 Indoor</option>
-              <option>🏡 Outdoor</option>
-            </select>
-          </div>
-          <div style="flex: 1; min-width: 140px;">
-            <label style="font-size: 0.85rem; color: #4a5c4a; display:block; margin-bottom: 0.4rem;">Date Planted</label>
-            <input type="date" id="plantDate" style="width:100%; padding: 0.6rem; border-radius: 8px; border: 1px solid #e0e8e0; background: rgba(255,255,255,0.8); outline:none;">
-          </div>
-        </div>
-        
-        <div style="margin-top: 1.2rem; display: flex; align-items: center; justify-content: space-between;">
-           <div style="flex: 1;">
-              <label style="font-size: 0.85rem; color: #4a5c4a; display:flex; align-items:center; gap: 0.5rem;">Care Frequency (Days) <span id="careFreqVal" style="font-weight:bold;">2</span></label>
-              <input type="range" id="waterFreq" min="1" max="30" value="2" style="width: 100%; margin-top: 0.5rem; accent-color: var(--primary);" oninput="document.getElementById('careFreqVal').textContent = this.value">
-           </div>
-           <div style="flex: 1; padding-left: 2rem; display:flex; flex-direction:column; align-items:flex-start;">
-              <label style="font-size: 0.85rem; color: #4a5c4a; display:block; margin-bottom: 0.4rem;">Care Reminders</label>
-              <div style="display:flex; align-items:center; gap:0.5rem;">
-                <input type="time" id="reminderTimeInput" value="09:00" style="padding: 0.4rem; border-radius: 6px; border: 1px solid #e0e8e0; background: rgba(255,255,255,0.8);">
-              </div>
-           </div>
+      <div class="form-row">
+        <div class="form-group"><label>Plant Name</label><input type="text" id="plantName"
+            placeholder="e.g. Cherry Tomato"></div>
+        <div class="form-group"><label>Variety</label><input type="text" id="plantVariety" placeholder="e.g. Hybrid F1">
         </div>
       </div>
-      
-      <!-- Hidden fields to maintain compatibility with existing JS -->
-      <textarea id="plantNotes" style="display:none;"></textarea>
-
-      <div class="modal-btns" style="display:flex; gap: 1rem; margin-top: 1rem;">
-        <button onclick="closeModal()" style="flex: 1; padding: 0.8rem; border-radius: 20px; border: 1px solid #8a9e8c; background: transparent; color: #4a5c4a; font-weight: 600; cursor:pointer;">Cancel</button>
-        <button onclick="addPlant()" style="flex: 1; padding: 0.8rem; border-radius: 20px; border: none; background: linear-gradient(135deg, #4f805d, #3c6e4a); color: white; font-weight: 600; cursor:pointer; box-shadow: 0 4px 12px rgba(79, 128, 93, 0.3);">Add to Garden</button>
+      <div class="form-group"><label>Growth Stage</label>
+        <div class="stage-picker">
+          <span class="stage-chip selected" onclick="selectStage(this)">🌰 Seed</span>
+          <span class="stage-chip" onclick="selectStage(this)">🌱 Sprout</span>
+          <span class="stage-chip" onclick="selectStage(this)">🍃 Vegetative</span>
+          <span class="stage-chip" onclick="selectStage(this)">🌸 Flowering</span>
+          <span class="stage-chip" onclick="selectStage(this)">🌾 Harvest</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Date Planted</label><input type="date" id="plantDate"></div>
+        <div class="form-group"><label>Water Every (days)</label><input type="number" id="waterFreq" placeholder="2"
+            min="1"></div>
+        <div class="form-group"><label>Reminder Time</label><input type="time" id="reminderTimeInput" value="09:00">
+        </div>
+      </div>
+      <div class="form-group"><label>Garden Type</label>
+        <select id="gardenType">
+          <option>🌿 Indoor</option>
+          <option>🏡 Outdoor</option>
+          <option>🪴 Balcony</option>
+          <option>🌱 Backyard</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea id="plantNotes" rows="2"
+          placeholder="Any special care instructions..."></textarea></div>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-save" onclick="addPlant()">🌱 Add to Garden</button>
       </div>
     </div>
   </div>
@@ -5765,7 +5802,7 @@
     // ==================== AUTH ====================
 
     function showAuthScreen(callback) {
-      window.location.href = 'login.html';
+      document.getElementById('authScreen').classList.remove('hidden');
       if (callback) window._authCallback = callback;
     }
     function closeAuthScreen() {
@@ -6656,171 +6693,6 @@
     function selectEmoji(el) { document.querySelectorAll('.emoji-opt').forEach(e => e.classList.remove('selected')); el.classList.add('selected'); selectedEmoji = el.dataset.emoji; }
     function selectStage(el) { document.querySelectorAll('.stage-chip').forEach(e => e.classList.remove('selected')); el.classList.add('selected'); selectedStage = el.textContent; }
     function setTodayDate() { const d = document.getElementById('plantDate'); if (d) d.value = new Date().toISOString().split('T')[0]; }
-    const plantDatabase = [
-      // MEDICINAL
-      { name: "Aloe Vera (Medicinal)", scientific: "Aloe barbadensis miller", icon: "🪴", freq: 14, health: [{icon:"🧴", text:"Soothes Skin"}, {icon:"✨", text:"Purifies Air"}] },
-      { name: "Holy Basil / Tulsi", scientific: "Ocimum tenuiflorum", icon: "🌿", freq: 2, health: [{icon:"🛡️", text:"Immunity Booster"}, {icon:"🫁", text:"Respiratory Health"}] },
-      { name: "Ashwagandha", scientific: "Withania somnifera", icon: "🪴", freq: 5, health: [{icon:"😌", text:"Reduces Anxiety"}, {icon:"💤", text:"Improves Sleep"}] },
-      { name: "Neem", scientific: "Azadirachta indica", icon: "🌳", freq: 7, health: [{icon:"🦠", text:"Antibacterial"}, {icon:"🩸", text:"Blood Purifier"}] },
-      { name: "Turmeric", scientific: "Curcuma longa", icon: "🌱", freq: 4, health: [{icon:"🔥", text:"Anti-inflammatory"}, {icon:"🛡️", text:"Immunity"}] },
-      { name: "Ginger", scientific: "Zingiber officinale", icon: "🌿", freq: 4, health: [{icon:"🤢", text:"Nausea Relief"}, {icon:"🔥", text:"Anti-inflammatory"}] },
-      { name: "Gotu Kola", scientific: "Centella asiatica", icon: "🍀", freq: 2, health: [{icon:"🧠", text:"Brain Health"}, {icon:"🩸", text:"Circulation"}] },
-      { name: "Echinacea", scientific: "Echinacea purpurea", icon: "🌸", freq: 5, health: [{icon:"🛡️", text:"Immune Support"}, {icon:"🤧", text:"Cold Relief"}] },
-      { name: "Chamomile", scientific: "Matricaria chamomilla", icon: "🌼", freq: 3, health: [{icon:"💤", text:"Sleep Aid"}, {icon:"😌", text:"Calming"}] },
-      { name: "Lavender", scientific: "Lavandula", icon: "🪻", freq: 7, health: [{icon:"😌", text:"Stress Relief"}, {icon:"💤", text:"Better Sleep"}] },
-      { name: "Peppermint", scientific: "Mentha × piperita", icon: "🍃", freq: 2, health: [{icon:"🌿", text:"Aids Digestion"}, {icon:"🤕", text:"Headache Relief"}] },
-      { name: "Lemon Balm", scientific: "Melissa officinalis", icon: "🌿", freq: 3, health: [{icon:"😌", text:"Calms Anxiety"}, {icon:"🧠", text:"Cognitive Boost"}] },
-      { name: "Calendula", scientific: "Calendula officinalis", icon: "🏵️", freq: 3, health: [{icon:"🧴", text:"Skin Healing"}, {icon:"🔥", text:"Anti-inflammatory"}] },
-      { name: "Ginseng", scientific: "Panax ginseng", icon: "🌱", freq: 5, health: [{icon:"⚡", text:"Energy Boost"}, {icon:"🧠", text:"Memory"}] },
-      { name: "Valerian", scientific: "Valeriana officinalis", icon: "🌿", freq: 3, health: [{icon:"💤", text:"Treats Insomnia"}, {icon:"😌", text:"Anxiety Relief"}] },
-      { name: "St. John's Wort", scientific: "Hypericum perforatum", icon: "🌼", freq: 4, health: [{icon:"😊", text:"Mood Elevator"}, {icon:"🩹", text:"Wound Healing"}] },
-      { name: "Dandelion", scientific: "Taraxacum", icon: "🌼", freq: 2, health: [{icon:"🩸", text:"Liver Detox"}, {icon:"💧", text:"Diuretic"}] },
-      { name: "Milk Thistle", scientific: "Silybum marianum", icon: "🌿", freq: 5, health: [{icon:"🩸", text:"Liver Health"}, {icon:"🛡️", text:"Antioxidant"}] },
-      { name: "Rosemary", scientific: "Salvia rosmarinus", icon: "🌿", freq: 7, health: [{icon:"🧠", text:"Memory Boost"}, {icon:"💇", text:"Hair Growth"}] },
-      { name: "Thyme", scientific: "Thymus vulgaris", icon: "🌿", freq: 7, health: [{icon:"🫁", text:"Cough Relief"}, {icon:"🦠", text:"Antibacterial"}] },
-      { name: "Oregano", scientific: "Origanum vulgare", icon: "🍃", freq: 5, health: [{icon:"🦠", text:"Antimicrobial"}, {icon:"🛡️", text:"Antioxidant"}] },
-      { name: "Sage", scientific: "Salvia officinalis", icon: "🌿", freq: 7, health: [{icon:"🧠", text:"Brain Health"}, {icon:"🫁", text:"Soothes Throat"}] },
-      { name: "Brahmi", scientific: "Bacopa monnieri", icon: "🌱", freq: 2, health: [{icon:"🧠", text:"Memory Enhancer"}, {icon:"😌", text:"Reduces Stress"}] },
-      { name: "Moringa", scientific: "Moringa oleifera", icon: "🌳", freq: 7, health: [{icon:"⚡", text:"Highly Nutritious"}, {icon:"🔥", text:"Anti-inflammatory"}] },
-      { name: "Amla (Indian Gooseberry)", scientific: "Phyllanthus emblica", icon: "🌳", freq: 5, health: [{icon:"✨", text:"Vitamin C Rich"}, {icon:"🛡️", text:"Immunity"}] },
-      { name: "Guduchi", scientific: "Tinospora cordifolia", icon: "🌿", freq: 4, health: [{icon:"🛡️", text:"Immunity Booster"}, {icon:"🔥", text:"Anti-inflammatory"}] },
-      { name: "Shatavari", scientific: "Asparagus racemosus", icon: "🌱", freq: 3, health: [{icon:"♀️", text:"Women's Health"}, {icon:"⚡", text:"Vitality"}] },
-      { name: "Licorice", scientific: "Glycyrrhiza glabra", icon: "🌿", freq: 4, health: [{icon:"🫁", text:"Respiratory Health"}, {icon:"🔥", text:"Anti-inflammatory"}] },
-      { name: "Fennel", scientific: "Foeniculum vulgare", icon: "🌱", freq: 3, health: [{icon:"🌿", text:"Aids Digestion"}, {icon:"🩸", text:"Blood Pressure"}] },
-      { name: "Coriander", scientific: "Coriandrum sativum", icon: "🌿", freq: 2, health: [{icon:"🌿", text:"Aids Digestion"}, {icon:"🩸", text:"Lowers Blood Sugar"}] },
-
-      // VEGETABLES
-      { name: "Tomato", scientific: "Solanum lycopersicum", icon: "🍅", freq: 2, health: [{icon:"❤️", text:"Heart Health"}, {icon:"👀", text:"Vision Support"}] },
-      { name: "Cherry Tomato", scientific: "Solanum lycopersicum var. cerasiforme", icon: "🍅", freq: 2, health: [{icon:"🛡️", text:"Antioxidants"}] },
-      { name: "Spinach", scientific: "Spinacia oleracea", icon: "🥬", freq: 2, health: [{icon:"💪", text:"Iron Rich"}, {icon:"👀", text:"Eye Health"}] },
-      { name: "Kale", scientific: "Brassica oleracea var. sabellica", icon: "🥬", freq: 2, health: [{icon:"🛡️", text:"High Antioxidants"}, {icon:"🦴", text:"Bone Health"}] },
-      { name: "Carrot", scientific: "Daucus carota", icon: "🥕", freq: 3, health: [{icon:"👀", text:"Vision Health"}, {icon:"✨", text:"Beta Carotene"}] },
-      { name: "Broccoli", scientific: "Brassica oleracea var. italica", icon: "🥦", freq: 3, health: [{icon:"🛡️", text:"Cancer Prevention"}, {icon:"✨", text:"Vitamin K"}] },
-      { name: "Bell Pepper", scientific: "Capsicum annuum", icon: "🫑", freq: 3, health: [{icon:"✨", text:"Vitamin C"}, {icon:"👀", text:"Eye Health"}] },
-      { name: "Chili Pepper", scientific: "Capsicum frutescens", icon: "🌶️", freq: 3, health: [{icon:"🔥", text:"Metabolism Boost"}, {icon:"🤕", text:"Pain Relief"}] },
-      { name: "Cucumber", scientific: "Cucumis sativus", icon: "🥒", freq: 2, health: [{icon:"💧", text:"Hydration"}, {icon:"✨", text:"Skin Health"}] },
-      { name: "Zucchini", scientific: "Cucurbita pepo", icon: "🥒", freq: 2, health: [{icon:"🌿", text:"Digestion"}, {icon:"❤️", text:"Heart Health"}] },
-      { name: "Eggplant", scientific: "Solanum melongena", icon: "🍆", freq: 3, health: [{icon:"🧠", text:"Brain Health"}, {icon:"🛡️", text:"Antioxidants"}] },
-      { name: "Onion", scientific: "Allium cepa", icon: "🧅", freq: 4, health: [{icon:"🛡️", text:"Immune Support"}, {icon:"❤️", text:"Heart Health"}] },
-      { name: "Garlic", scientific: "Allium sativum", icon: "🧄", freq: 4, health: [{icon:"🦠", text:"Antibacterial"}, {icon:"❤️", text:"Lowers BP"}] },
-      { name: "Potato", scientific: "Solanum tuberosum", icon: "🥔", freq: 4, health: [{icon:"⚡", text:"Energy"}, {icon:"🍌", text:"Potassium Rich"}] },
-      { name: "Sweet Potato", scientific: "Ipomoea batatas", icon: "🍠", freq: 4, health: [{icon:"👀", text:"Vision Support"}, {icon:"🩸", text:"Blood Sugar Control"}] },
-      { name: "Radish", scientific: "Raphanus sativus", icon: "🥗", freq: 2, health: [{icon:"🩸", text:"Detoxifies Blood"}, {icon:"🌿", text:"Digestion"}] },
-      { name: "Beetroot", scientific: "Beta vulgaris", icon: "🥗", freq: 3, health: [{icon:"❤️", text:"Lowers BP"}, {icon:"🏃", text:"Athletic Performance"}] },
-      { name: "Cabbage", scientific: "Brassica oleracea var. capitata", icon: "🥬", freq: 3, health: [{icon:"🔥", text:"Anti-inflammatory"}, {icon:"🌿", text:"Digestion"}] },
-      { name: "Cauliflower", scientific: "Brassica oleracea var. botrytis", icon: "🥦", freq: 3, health: [{icon:"🛡️", text:"Antioxidants"}, {icon:"🧠", text:"Choline Source"}] },
-      { name: "Peas", scientific: "Pisum sativum", icon: "🫛", freq: 3, health: [{icon:"💪", text:"Plant Protein"}, {icon:"🌿", text:"High Fiber"}] },
-      { name: "Green Beans", scientific: "Phaseolus vulgaris", icon: "🫘", freq: 3, health: [{icon:"❤️", text:"Heart Health"}, {icon:"🦴", text:"Bone Health"}] },
-      { name: "Pumpkin", scientific: "Cucurbita", icon: "🎃", freq: 4, health: [{icon:"👀", text:"Vision Support"}, {icon:"🛡️", text:"Immunity"}] },
-      { name: "Lettuce", scientific: "Lactuca sativa", icon: "🥬", freq: 2, health: [{icon:"💧", text:"Hydration"}, {icon:"💤", text:"Sleep Aid"}] },
-      { name: "Corn", scientific: "Zea mays", icon: "🌽", freq: 3, health: [{icon:"👀", text:"Eye Health"}, {icon:"🌿", text:"High Fiber"}] },
-      { name: "Asparagus", scientific: "Asparagus officinalis", icon: "🥗", freq: 3, health: [{icon:"💧", text:"Diuretic"}, {icon:"🤰", text:"Folate Rich"}] },
-
-      // FRUITS
-      { name: "Strawberry", scientific: "Fragaria × ananassa", icon: "🍓", freq: 2, health: [{icon:"✨", text:"Vitamin C"}, {icon:"🧠", text:"Brain Health"}] },
-      { name: "Blueberry", scientific: "Vaccinium corymbosum", icon: "🫐", freq: 3, health: [{icon:"🛡️", text:"Super Antioxidant"}, {icon:"🧠", text:"Brain Boost"}] },
-      { name: "Raspberry", scientific: "Rubus idaeus", icon: "🍓", freq: 3, health: [{icon:"🌿", text:"High Fiber"}, {icon:"🔥", text:"Anti-inflammatory"}] },
-      { name: "Blackberry", scientific: "Rubus", icon: "🫐", freq: 3, health: [{icon:"🦷", text:"Oral Health"}, {icon:"🧠", text:"Brain Health"}] },
-      { name: "Apple", scientific: "Malus domestica", icon: "🍎", freq: 5, health: [{icon:"❤️", text:"Heart Health"}, {icon:"🌿", text:"Aids Digestion"}] },
-      { name: "Lemon", scientific: "Citrus limon", icon: "🍋", freq: 5, health: [{icon:"✨", text:"Vitamin C"}, {icon:"💧", text:"Hydration"}] },
-      { name: "Orange", scientific: "Citrus × sinensis", icon: "🍊", freq: 5, health: [{icon:"🛡️", text:"Immune Support"}, {icon:"✨", text:"Skin Health"}] },
-      { name: "Banana", scientific: "Musa", icon: "🍌", freq: 4, health: [{icon:"⚡", text:"Energy"}, {icon:"❤️", text:"Heart Health"}] },
-      { name: "Watermelon", scientific: "Citrullus lanatus", icon: "🍉", freq: 3, health: [{icon:"💧", text:"Hydration"}, {icon:"💪", text:"Muscle Soreness Relief"}] },
-      { name: "Grapes", scientific: "Vitis vinifera", icon: "🍇", freq: 4, health: [{icon:"🛡️", text:"Antioxidants"}, {icon:"❤️", text:"Heart Health"}] },
-      { name: "Mango", scientific: "Mangifera indica", icon: "🥭", freq: 5, health: [{icon:"🛡️", text:"Immune Boost"}, {icon:"🌿", text:"Digestion"}] },
-      { name: "Pineapple", scientific: "Ananas comosus", icon: "🍍", freq: 4, health: [{icon:"🔥", text:"Anti-inflammatory"}, {icon:"🌿", text:"Digestion"}] },
-      { name: "Peach", scientific: "Prunus persica", icon: "🍑", freq: 4, health: [{icon:"✨", text:"Skin Health"}, {icon:"🌿", text:"Digestion"}] },
-      { name: "Cherry", scientific: "Prunus avium", icon: "🍒", freq: 4, health: [{icon:"💤", text:"Sleep Aid (Melatonin)"}, {icon:"🔥", text:"Anti-inflammatory"}] },
-      { name: "Avocado", scientific: "Persea americana", icon: "🥑", freq: 5, health: [{icon:"❤️", text:"Healthy Fats"}, {icon:"👀", text:"Vision Support"}] },
-      { name: "Papaya", scientific: "Carica papaya", icon: "🥭", freq: 4, health: [{icon:"🌿", text:"Digestion (Papain)"}, {icon:"✨", text:"Skin Health"}] },
-      { name: "Pomegranate", scientific: "Punica granatum", icon: "🍎", freq: 5, health: [{icon:"🛡️", text:"Powerful Antioxidants"}, {icon:"❤️", text:"Heart Health"}] },
-      { name: "Kiwi", scientific: "Actinidia deliciosa", icon: "🥝", freq: 3, health: [{icon:"✨", text:"Vitamin C"}, {icon:"💤", text:"Sleep Quality"}] },
-      { name: "Fig", scientific: "Ficus carica", icon: "🌳", freq: 4, health: [{icon:"🌿", text:"High Fiber"}, {icon:"🦴", text:"Bone Health"}] },
-      { name: "Olive", scientific: "Olea europaea", icon: "🫒", freq: 7, health: [{icon:"❤️", text:"Heart Health"}, {icon:"🔥", text:"Anti-inflammatory"}] },
-
-      // INDOOR / AIR PURIFYING
-      { name: "Snake Plant", scientific: "Sansevieria trifasciata", icon: "🪴", freq: 14, health: [{icon:"🌬️", text:"Night Air Purifier"}, {icon:"✨", text:"Removes Toxins"}] },
-      { name: "Spider Plant", scientific: "Chlorophytum comosum", icon: "🪴", freq: 7, health: [{icon:"🌬️", text:"Air Purifier"}, {icon:"🐾", text:"Pet Safe"}] },
-      { name: "Peace Lily", scientific: "Spathiphyllum", icon: "🌸", freq: 5, health: [{icon:"🌬️", text:"Removes Mold Spores"}, {icon:"✨", text:"Purifies Air"}] },
-      { name: "English Ivy", scientific: "Hedera helix", icon: "🌿", freq: 5, health: [{icon:"🫁", text:"Respiratory Support"}, {icon:"🌬️", text:"Air Purifier"}] },
-      { name: "Boston Fern", scientific: "Nephrolepis exaltata", icon: "🌿", freq: 3, health: [{icon:"💧", text:"Natural Humidifier"}, {icon:"🌬️", text:"Air Purifier"}] },
-      { name: "Golden Pothos", scientific: "Epipremnum aureum", icon: "🌿", freq: 7, health: [{icon:"🌬️", text:"Air Purifier"}, {icon:"😌", text:"Reduces Stress"}] },
-      { name: "Rubber Plant", scientific: "Ficus elastica", icon: "🌳", freq: 7, health: [{icon:"🌬️", text:"Air Purifier"}, {icon:"🤧", text:"Hypoallergenic"}] },
-      { name: "Areca Palm", scientific: "Dypsis lutescens", icon: "🌴", freq: 5, health: [{icon:"💧", text:"Natural Humidifier"}, {icon:"🌬️", text:"Air Purifier"}] },
-      { name: "ZZ Plant", scientific: "Zamioculcas zamiifolia", icon: "🪴", freq: 21, health: [{icon:"🌬️", text:"Air Purifier"}, {icon:"✨", text:"Low Maintenance"}] },
-      { name: "Monstera", scientific: "Monstera deliciosa", icon: "🪴", freq: 7, health: [{icon:"😌", text:"Mood Booster"}, {icon:"🌬️", text:"Air Purifier"}] },
-      { name: "Philodendron", scientific: "Philodendron", icon: "🌿", freq: 7, health: [{icon:"🌬️", text:"Air Purifier"}, {icon:"😌", text:"Reduces Stress"}] },
-      { name: "Aloe Arborescens", scientific: "Aloe arborescens", icon: "🪴", freq: 14, health: [{icon:"🧴", text:"Skin Healing"}, {icon:"🛡️", text:"Immunity"}] },
-      { name: "Alocasia Polly", scientific: "Alocasia amazonica", icon: "🌿", freq: 5, health: [{icon:"✨", text:"Air Purifier"}] },
-      { name: "Ficus Benjamina", scientific: "Ficus benjamina", icon: "🌳", freq: 7, health: [{icon:"🌬️", text:"Air Purifier"}] },
-      { name: "Jade Plant", scientific: "Crassula ovata", icon: "🪴", freq: 14, health: [{icon:"🌬️", text:"Improves Air Quality"}] },
-      
-      // FLOWERS / ORNAMENTAL (WITH BENEFITS)
-      { name: "Rose", scientific: "Rosa", icon: "🌹", freq: 3, health: [{icon:"😌", text:"Stress Relief"}, {icon:"🧴", text:"Skin Health"}] },
-      { name: "Sunflower", scientific: "Helianthus annuus", icon: "🌻", freq: 3, health: [{icon:"😊", text:"Mood Enhancer"}, {icon:"🥜", text:"Nutritious Seeds"}] },
-      { name: "Hibiscus", scientific: "Hibiscus rosa-sinensis", icon: "🌺", freq: 2, health: [{icon:"❤️", text:"Lowers Blood Pressure"}, {icon:"🛡️", text:"Antioxidants"}] },
-      { name: "Jasmine", scientific: "Jasminum", icon: "🌼", freq: 3, health: [{icon:"😌", text:"Anxiety Relief"}, {icon:"💤", text:"Better Sleep"}] },
-      { name: "Lotus", scientific: "Nelumbo nucifera", icon: "🪷", freq: 2, health: [{icon:"😌", text:"Calming"}, {icon:"🩸", text:"Stops Bleeding"}] },
-      { name: "Marigold", scientific: "Tagetes", icon: "🏵️", freq: 3, health: [{icon:"🧴", text:"Skin Healing"}, {icon:"🦟", text:"Mosquito Repellent"}] },
-      { name: "Orchid", scientific: "Orchidaceae", icon: "🌸", freq: 7, health: [{icon:"🌬️", text:"Night Air Purifier"}, {icon:"😌", text:"Reduces Stress"}] },
-      { name: "Tulip", scientific: "Tulipa", icon: "🌷", freq: 4, health: [{icon:"😊", text:"Mood Booster"}] },
-      { name: "Daisy", scientific: "Bellis perennis", icon: "🌼", freq: 3, health: [{icon:"🩹", text:"Wound Healing"}] },
-      { name: "Chrysanthemum", scientific: "Chrysanthemum", icon: "🌼", freq: 3, health: [{icon:"🔥", text:"Anti-inflammatory"}, {icon:"🌬️", text:"Air Purifier"}] }
-    ];
-
-    function searchPlantDb(q) {
-      const dropdown = document.getElementById('dbDropdown');
-      dropdown.style.display = 'block';
-      dropdown.innerHTML = '';
-      
-      const lower = q.toLowerCase();
-      let matches = plantDatabase;
-      if (q) {
-         matches = plantDatabase.filter(p => p.name.toLowerCase().includes(lower) || p.scientific.toLowerCase().includes(lower));
-      }
-      
-      if (matches.length === 0) {
-        dropdown.innerHTML = '<div style="padding: 0.8rem 1rem; color: #8a9e8c;">No plants found. Try a different name!</div>';
-        return;
-      }
-      
-      matches.forEach(p => {
-        const div = document.createElement('div');
-        div.style.cssText = 'padding: 0.8rem 1rem; cursor: pointer; border-bottom: 1px solid #f0f0f0; display:flex; align-items:center; gap: 0.8rem; transition: background 0.2s;';
-        div.onmouseover = () => div.style.background = '#f5f9f5';
-        div.onmouseout = () => div.style.background = 'transparent';
-        div.innerHTML = `<span style="font-size:1.5rem">${p.icon}</span> <div><div style="font-weight:600; color:#1a3d1a">${p.name}</div><div style="font-size:0.8rem; color:#8a9e8c">${p.scientific}</div></div>`;
-        div.onclick = () => selectPlantFromDb(p);
-        dropdown.appendChild(div);
-      });
-    }
-
-    function selectPlantFromDb(p) {
-      document.getElementById('plantSearchDb').value = p.name;
-      document.getElementById('dbDropdown').style.display = 'none';
-      
-      selectedEmoji = p.icon; // update global emoji
-      document.getElementById('selectedPlantIcon').textContent = p.icon;
-      document.getElementById('plantName').value = p.name;
-      document.getElementById('scientificName').innerHTML = 'Scientific Name: <span>' + p.scientific + '</span>';
-      
-      document.getElementById('waterFreq').value = p.freq;
-      document.getElementById('careFreqVal').textContent = p.freq;
-      
-      const hc = document.getElementById('healthBenefitsContainer');
-      hc.innerHTML = '';
-      if (p.health && p.health.length > 0) {
-        p.health.forEach(h => {
-          hc.innerHTML += `<div class="health-pill" style="font-size:0.75rem; background:rgba(255,255,255,0.9); border:1px solid #d4eed8; padding:0.3rem 0.6rem; border-radius:20px; display:flex; align-items:center; gap:0.3rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02);"><span>${h.icon}</span> ${h.text}</div>`;
-        });
-      } else {
-         hc.innerHTML = '<div style="font-size:0.75rem; color:#8a9e8c; font-style:italic;">No known specific benefits</div>';
-      }
-    }
-
-    // Default stage since we removed the picker
-    selectedStage = '🌱 Vegetative';
-
     async function addPlant() {
       if (!currentUser) return;
       const name = document.getElementById('plantName').value.trim() || 'My Plant';
@@ -6878,33 +6750,12 @@
     }
 
     // ==================== SEARCH ====================
-        function globalSearch(q) {
-      if (!currentUser) return;
-      const ud = getUserData(currentUser.email);
-      
-      if (q && document.querySelector('.page.active').id !== 'page-plants') {
-        showPage('plants');
-      }
-
-      if (!q) {
-        renderPlantGrid('plantsPageGrid', ud.plants);
-        const countEl = document.getElementById('plantsPageCount');
-        if (countEl) countEl.textContent = '(' + ud.plants.length + ')';
-        if (document.querySelector('.page.active').id !== 'page-plants') {
-            return;
-        }
-        return;
-      }
-
+    function globalSearch(q) {
+      if (!q || !currentUser) return;
       const lower = q.toLowerCase();
-      const filtered = ud.plants.filter(p => 
-        p.name.toLowerCase().includes(lower) || 
-        p.variety.toLowerCase().includes(lower)
-      );
-      
-      renderPlantGrid('plantsPageGrid', filtered);
-      const countEl = document.getElementById('plantsPageCount');
-      if (countEl) countEl.textContent = '(' + filtered.length + ' found)';
+      const ud = getUserData(currentUser.email);
+      const match = ud.plants.find(p => p.name.toLowerCase().includes(lower));
+      if (match) { showPage('plants'); setTimeout(() => showToast(`🔍 Found: ${match.name}`), 400); }
     }
 
     // ==================== DISEASE DETECTOR ====================

@@ -1,54 +1,34 @@
 const fs = require('fs');
-let c = fs.readFileSync('index.html', 'utf8');
-const scriptStart = c.indexOf('<script>') + 8;
-const scriptEnd = c.lastIndexOf('</script>');
-let script = c.slice(scriptStart, scriptEnd);
 
-// Fix updateNavUser — show "Sign In" when no user, user name when logged in
-const unStart = script.indexOf('function updateNavUser(){');
-const unEnd = script.indexOf('\nfunction ', unStart + 10);
-const oldFn = script.slice(unStart, unEnd);
-console.log('Replacing updateNavUser...');
+let html = fs.readFileSync('index.html', 'utf8');
 
-const newFn = `function updateNavUser(){
-  const nameEl   = document.getElementById('navUserName');
-  const avatarEl = document.getElementById('navUserAvatar');
-  if(!currentUser){
-    if(nameEl)   nameEl.textContent = 'Sign In';
-    if(avatarEl) avatarEl.textContent = '?';
-    return;
-  }
-  const initials = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'G';
-  if(avatarEl) avatarEl.textContent = initials;
-  if(nameEl)   nameEl.textContent   = currentUser.name?.split(' ')[0] || 'Gardener';
-}`;
+// 1. Change HTML structure for the payment page
+html = html.replace(
+  /<div class="pay-modal-overlay" id="payModalOverlay"[^>]*>\s*<div class="pay-modal" id="payModal">/s,
+  '<!-- PAYMENT PAGE -->\n  <div class="page" id="page-checkout">\n    <div style="padding: 4rem 1.5rem; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh;">\n      <div class="pay-modal" id="payModal" style="transform:none; box-shadow:0 16px 40px rgba(0,0,0,0.15); max-height:none; overflow:visible; margin:0; width:100%;">'
+);
 
-script = script.slice(0, unStart) + newFn + script.slice(unEnd);
+// 2. Add extra closing div for the new wrapper before NAVBAR
+html = html.replace(
+  /    <\/div>\s*<\/div>\s*<!-- NAVBAR -->/s,
+  '      </div>\n    </div>\n  </div>\n\n  <!-- NAVBAR -->'
+);
 
-// Also call updateNavUser() on page load (even without a session, so "Sign In" shows)
-const domMarker = "window.addEventListener('DOMContentLoaded'";
-const domIdx = script.indexOf(domMarker);
-if (domIdx !== -1) {
-    // Find '}); at the end and insert updateNavUser() call before it
-    // Add an extra call after DOMContentLoaded loads
-    script = script.replace(
-        "document.getElementById('authScreen').classList.add('hidden');\n  }",
-        "document.getElementById('authScreen').classList.add('hidden');\n    updateNavUser();\n  }"
-    );
-    // Also call it in the else branch
-    script = script.replace(
-        "document.getElementById('authScreen').classList.add('hidden');\n  } else {\n    document.getElementById('authScreen').classList.add('hidden');\n  }",
-        "document.getElementById('authScreen').classList.add('hidden');\n    updateNavUser();\n  } else {\n    document.getElementById('authScreen').classList.add('hidden');\n    updateNavUser(); // show 'Sign In'\n  }"
-    );
-    console.log('✓ updateNavUser called on page load (both logged in and out)');
-}
+// 3. Update Javascript: openPayModal
+html = html.replace(
+  /document\.getElementById\('payModalOverlay'\)\.classList\.add\('open'\);\s*document\.body\.style\.overflow = 'hidden';/g,
+  "showPage('checkout');\n      window.scrollTo(0,0);"
+);
 
-const output = c.slice(0, scriptStart) + script + c.slice(scriptEnd);
+// 4. Update Javascript: closePayModal
+const oldClosePayModalRegex = /document\.getElementById\('payModalOverlay'\)\.classList\.remove\('open'\);\s*document\.body\.style\.overflow = '';/g;
+html = html.replace(oldClosePayModalRegex, "showPage('home');");
 
-// Verify brace balance
-let depth = 0;
-for (const ch of script) { if (ch === '{') depth++; if (ch === '}') depth--; }
-console.log('JS brace balance:', depth, depth === 0 ? '✅' : '⚠️');
+// 5. Update array of modal overlays
+html = html.replace(
+  /\['modalOverlay',\s*'payModalOverlay',\s*'prodModalOverlay',\s*'detailOverlay',\s*'guideModalOverlay'\]/g,
+  "['modalOverlay', 'prodModalOverlay', 'detailOverlay', 'guideModalOverlay']"
+);
 
-fs.writeFileSync('index.html', output, 'utf8');
-console.log('✅ Saved! Size:', output.length);
+fs.writeFileSync('index.html', html, 'utf8');
+console.log('Successfully updated index.html with regex');

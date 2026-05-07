@@ -170,7 +170,7 @@ app.get('/auth/google/callback', (req, res, next) => {
 
 // Get the currently logged-in user from the Data Store
 app.get('/api/current_user', (req, res) => {
-    res.send(req.user || null);
+    res.json(req.user || { error: 'Not logged in' });
 });
 
 // Logout User and destroy the session
