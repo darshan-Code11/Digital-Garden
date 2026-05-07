@@ -131,7 +131,7 @@ app.get('/auth/google', (req, res, next) => {
         return res.status(500).send('<h2>Authentication Error</h2><p>Google Client ID is missing in your .env file.</p><a href="/">Go Back</a>');
     }
     // Store the redirect origin in session so we can return to the same place (important for mobile)
-    req.session.returnTo = req.header('Referer') || '/';
+    let ref = req.header('Referer') || '/'; if (ref.includes('login.html')) ref = '/'; req.session.returnTo = ref;
 
     try {
         const authMiddleware = passport.authenticate('google', { scope: ['profile', 'email'] });
