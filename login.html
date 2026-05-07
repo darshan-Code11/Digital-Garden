@@ -341,7 +341,7 @@
       // Simple local storage mock for now, backend will handle session
       let users = JSON.parse(localStorage.getItem('gardenlog_users') || '{}');
       if (!users[email]) return showAuthError('Account not found.');
-      sessionStorage.setItem('gardenlog_session', JSON.stringify(users[email]));
+      localStorage.setItem('gardenlog_session', JSON.stringify(users[email]));
       try {
         await fetch('/api/sync-session', {
             method: 'POST',
@@ -366,7 +366,7 @@
       };
       users[email] = newUser;
       localStorage.setItem('gardenlog_users', JSON.stringify(users));
-      sessionStorage.setItem('gardenlog_session', JSON.stringify(newUser));
+      localStorage.setItem('gardenlog_session', JSON.stringify(newUser));
       try {
         await fetch('/api/sync-session', {
             method: 'POST',
