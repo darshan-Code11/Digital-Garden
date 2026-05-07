@@ -1,0 +1,15 @@
+5710: await fetch('/api/orders', {
+5726: const res = await fetch('/api/orders?email=' + encodeURIComponent(currentUser.email));
+5853: window.location.href = '/auth/google';
+5868: const res = await fetch('/api/sync-session', {
+5947: try { await fetch('/api/logout', { credentials: 'include' }); } catch (e) { }
+6138: await fetch('/api/plants/' + plant._id + '/water', {
+6167: await fetch(`/api/plants/${dbId}`, {
+6730: const res = await fetch('/api/plants', {
+6804: const apiRes = await fetch('/api/detect-disease', {
+6913: let res = await fetch('/api/update-profile', {
+6923: const syncRes = await fetch('/api/sync-session', {
+6931: res = await fetch('/api/update-profile', {
+6963: fetch('/api/test-reminder', {
+7045: const res = await fetch('/api/current_user', { credentials: 'include' });
+7066: const pRes = await fetch('/api/plants?email=' + u.email);
