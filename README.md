@@ -82,6 +82,36 @@ npm start
 
 The application will be available at `http://localhost:5000`.
 
+## 🎯 Problem Statement
+
+Urbanization and fast-paced lifestyles have disconnected many from nature, leading to neglected plants and failed indoor gardening attempts due to lack of knowledge and timely care. Plant diseases are often misdiagnosed or identified too late, leading to plant mortality.
+
+## 💡 Objectives
+
+- **Digital Companionship:** Provide a centralized platform to manage and track the lifecycle of various plants.
+- **Intelligent Diagnostics:** Utilize machine learning to accurately identify plant diseases from images.
+- **Proactive Care:** Implement an automated reminder system to ensure timely watering and maintenance.
+- **E-commerce Ecosystem:** Create a marketplace for purchasing gardening supplies securely.
+
+## 🏗️ System Architecture
+
+The application follows a standard Client-Server architecture:
+1. **Client-Side:** HTML5/CSS3/Vanilla JS interface handling user interactions and responsive design.
+2. **Server-Side:** Node.js/Express.js backend providing RESTful APIs for authentication, plant management, disease diagnosis, and payments.
+3. **Database:** MongoDB storing user profiles, garden details, tasks, and transaction history.
+4. **External APIs:** Integration with Google (OAuth), Twilio (SMS), Razorpay (Payments), and HuggingFace/Claude (AI Vision).
+
+## 🔮 Future Scope
+
+- **IoT Integration:** Connecting with smart soil moisture sensors for automated watering and real-time alerts.
+- **Community Forum:** A social space for gardeners to share tips, swap seeds, and ask questions.
+- **Weather API Integration:** Adjusting watering schedules automatically based on local weather forecasts.
+- **Advanced AR:** Augmented Reality features to visualize plant growth and placement in physical spaces.
+
+## 👥 Contributors / Team
+
+- **Darshan Gowda** - Developer & Project Lead
+
 ## 📂 Project Structure
 
 -   `server.js`: The main Express server handling routing, database connections, and integrations.
