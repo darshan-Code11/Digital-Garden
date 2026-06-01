@@ -4819,6 +4819,7 @@
           <div class="user-dd-item" onclick="showPage('encyclopedia');closeDiseaseDropdown()">📖 Encyclopedia</div>
           <div class="user-dd-item" onclick="showPage('treatments');closeDiseaseDropdown()">💊 Treatments</div>
           <div class="user-dd-item" onclick="showPage('prevention');closeDiseaseDropdown()">🛡️ Prevention</div>
+          <div class="user-dd-item" onclick="showPage('outbreak');closeDiseaseDropdown()">🗺️ Outbreak Tracker</div>
           <div class="user-dd-item" onclick="showPage('detector');closeDiseaseDropdown()">🔬 AI Detector</div>
         </div>
       </div>
@@ -5246,10 +5247,51 @@
     </div>
   </section>
 
+  <section class="page" id="page-outbreak">
+    <div class="main" style="padding-top:2rem">
+      <div class="section-header">
+        <div class="section-title">Local Outbreak Tracker 🗺️</div>
+      </div>
+      <p style="color: #8a9e8c; margin-top:-1rem; margin-bottom: 2rem; font-weight:500;">Real-time alerts for plant diseases reported in your region.</p>
+      
+      <div class="stats-bar" style="padding:0 0 2rem 0; justify-content: flex-start;">
+        <div class="stat-card" style="flex:1; max-width:300px;">
+          <div class="stat-icon">⚠️</div>
+          <div>
+            <div class="stat-num" style="color:#e05252">High Risk</div>
+            <div class="stat-label">Powdery Mildew</div>
+          </div>
+        </div>
+        <div class="stat-card" style="flex:1; max-width:300px;">
+          <div class="stat-icon">🌡️</div>
+          <div>
+            <div class="stat-num" style="color:#d9822b">Medium Risk</div>
+            <div class="stat-label">Spider Mites</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="market-grid" id="outbreakGrid">
+        <div class="market-item">
+          <div style="height: 120px; background: var(--mist); border-radius: 12px; display:flex; align-items:center; justify-content:center; font-size:3rem;">🍄</div>
+          <h3 style="margin-top: 1rem; color:#e05252;">Powdery Mildew</h3>
+          <p style="font-size: 0.85rem; color: #8a9e8c; margin-top: 0.5rem; line-height:1.4">14 cases reported within 10km in the last 48 hours. High humidity is contributing.</p>
+          <button class="btn-primary btn-sm" style="margin-top:1rem; width:100%" onclick="showPage('treatments')">View Protocol</button>
+        </div>
+        <div class="market-item">
+          <div style="height: 120px; background: var(--mist); border-radius: 12px; display:flex; align-items:center; justify-content:center; font-size:3rem;">🕷️</div>
+          <h3 style="margin-top: 1rem; color:#d9822b;">Spider Mites</h3>
+          <p style="font-size: 0.85rem; color: #8a9e8c; margin-top: 0.5rem; line-height:1.4">5 cases reported nearby. Current dry weather favors rapid reproduction.</p>
+          <button class="btn-primary btn-sm" style="margin-top:1rem; width:100%" onclick="showPage('treatments')">View Protocol</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="page" id="page-detector">
     <div class="main" style="padding-top:2rem; display:flex; justify-content:center;">
       <div class="detect-card" style="width: 100%; max-width: 600px; padding: 2.5rem;">
-        <h3 style="font-family:'Playfair Display',serif;font-size:1.6rem;color:#8b5e3c;margin-bottom:.5rem;text-align:center;">🔬 AI Disease Detector</h3>
+        <h3 style="font-family:'Playfair Display',serif;font-size:1.6rem;color:#8b5e3c;margin-bottom:.5rem;text-align:center;">AI Disease Detector</h3>
         <p style="font-size:1.05rem;color:#a07040;margin-bottom:2rem;text-align:center;">Upload a leaf photo — AI analyzes symptoms, confidence & treatment</p>
         <div class="detect-area" id="detectArea" onclick="simulateDetect()" style="padding: 4rem 2rem;">
           <div class="detect-icon" id="detectIcon" style="font-size:4rem; margin-bottom:1rem;">📷</div>
