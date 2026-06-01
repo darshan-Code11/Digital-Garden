@@ -9,6 +9,7 @@ const Razorpay = require('razorpay');
 const twilio = require('twilio');
 const cron = require('node-cron');
 const dns = require('dns');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 require('dotenv').config();
 
 // Fix for MongoDB Atlas connection issues on some networks
@@ -20,7 +21,8 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({ origin: true, credentials: true })); // Allow all origins for easier mobile access
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(session({ secret: process.env.SESSION_SECRET || 'super_secret', resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -630,116 +632,72 @@ function normalizeLabel(label) {
 }
 
 // ============================================
-// 5. AI DISEASE DETECTOR (HuggingFace ML → DB lookup → Claude fallback)
+// ============================================
+// 5. AI DISEASE DETECTOR (Google Gemini 1.5 Flash)
 // ============================================
 app.post('/api/detect-disease', async (req, res) => {
     try {
         const { imageBase64, mediaType } = req.body;
         if (!imageBase64) return res.status(400).json({ error: 'No image provided' });
 
-        // Convert base64 to binary buffer for HF API
-        const imgBuffer = Buffer.from(imageBase64, 'base64');
-
-        // ── STEP 1: Call Hugging Face ML model (PlantVillage trained) ──────────
-        const HF_MODEL = 'linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification';
-        const hfHeaders = { 'Content-Type': 'application/octet-stream', 'Authorization': `Bearer ${process.env.HF_API_KEY || ''}` };
-
-        let mlLabel = null;
-        let mlScore = null;
-
-        try {
-            const hfRes = await fetch(`https://router.huggingface.co/hf-inference/models/${HF_MODEL}`, {
-                method: 'POST',
-                headers: hfHeaders,
-                body: imgBuffer
-            });
-            const hfData = await hfRes.json();
-            console.log('🤖 HF ML result:', JSON.stringify(hfData).substring(0, 200));
-
-            // HF returns array of {label, score} sorted by confidence
-            if (Array.isArray(hfData) && hfData.length > 0 && hfData[0].label) {
-                mlLabel = hfData[0].label;
-                mlScore = Math.round(hfData[0].score * 100);
-            } else if (hfData.error) {
-                console.warn('HF API warning:', hfData.error);
-            }
-        } catch (hfErr) {
-            console.warn('HF API call failed, falling back to Claude:', hfErr.message);
-        }
-
-        // ── STEP 2: Look up disease in our comprehensive database ──────────────
-        if (mlLabel) {
-            const dbKey = normalizeLabel(mlLabel);
-            if (dbKey && PLANT_DISEASE_DB[dbKey]) {
-                const info = PLANT_DISEASE_DB[dbKey];
-                console.log(`✅ ML identified: ${info.label} (${mlScore}% confidence)`);
-                return res.json({
-                    status: info.label,
-                    healthy: info.healthy,
-                    confidence: mlScore || info.confidence,
-                    urgency: info.urgency,
-                    urgencyLabel: info.urgencyLabel,
-                    description: info.desc,
-                    steps: info.steps,
-                    alts: info.alts,
-                    source: 'PlantVillage ML Model (MobileNetV2, 54K+ images)'
-                });
-            }
-        }
-
-        // ── STEP 3: Fallback to Claude if HF failed or label not in DB ─────────
-        console.log('⚠️ Falling back to Claude API for:', mlLabel || 'unknown');
-        const anthropicKey = process.env.ANTHROPIC_API_KEY;
-        if (!anthropicKey) {
+        const geminiKey = process.env.GEMINI_API_KEY;
+        if (!geminiKey) {
             return res.json({
-                status: mlLabel || 'Analysis Unavailable',
+                status: 'API Key Missing',
                 healthy: false,
-                confidence: mlScore || 50,
+                confidence: 0,
                 urgency: 'med',
-                urgencyLabel: '🟡 Manual Assessment Needed',
-                description: 'ML model detected an issue but database lookup failed. Please consult a local agricultural extension service.',
-                steps: ['Take a clear close-up photo of affected area', 'Consult your local plant nursery or extension office', 'Remove visibly diseased plant material as a precaution'],
+                urgencyLabel: '⚠️ Setup Required',
+                description: 'To use the highly accurate AI Disease Detector, please add your GEMINI_API_KEY to the backend .env file. You can get one for free at aistudio.google.com.',
+                steps: ['Go to aistudio.google.com and generate an API key', 'Open the .env file in the Gradern-project folder', 'Add GEMINI_API_KEY=your_key_here', 'Restart the Node server'],
                 alts: [],
-                source: 'ML Model (database lookup failed)'
+                source: 'System Setup'
             });
         }
 
-        const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: { 'x-api-key': anthropicKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-            body: JSON.stringify({
-                model: 'claude-3-5-sonnet-20241022',
-                max_tokens: 800,
-                messages: [{
-                    role: 'user',
-                    content: [
-                        { type: 'image', source: { type: 'base64', media_type: mediaType || 'image/jpeg', data: imageBase64 } },
-                        {
-                            type: 'text',
-                            text: `You are a plant pathologist with expertise in the PlantVillage dataset (38 disease classes). ${mlLabel ? `A MobileNetV2 ML model pre-classified this as: "${mlLabel}" with ${mlScore}% confidence.` : ''} Analyze this leaf image and respond ONLY with a valid JSON object (no markdown):
-{"status":"precise disease name","healthy":true/false,"confidence":85,"urgency":"low/med/high/critical","urgencyLabel":"🟢 No Action Needed","description":"3-4 sentence scientific diagnosis","steps":["step1","step2","step3","step4"],"alts":[{"name":"Alternative Disease","pct":8}],"source":"Claude Vision + ML"}`
-                        }
-                    ]
-                }]
-            })
-        });
-        const claudeData = await claudeRes.json();
-        if (claudeData.error) throw new Error(claudeData.error.message);
-        const text = claudeData.content[0].text.trim().replace(/```json|```/g, '').trim();
-        return res.json(JSON.parse(text));
+        const genAI = new GoogleGenerativeAI(geminiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        const prompt = `You are an expert plant pathologist. Analyze this leaf/plant image.
+Respond ONLY with a valid JSON object (no markdown, no backticks). Follow this exact structure:
+{
+  "status": "Precise disease name (or Healthy Plant Name)",
+  "healthy": true/false,
+  "confidence": 85,
+  "urgency": "low" (if healthy) or "med"/"high"/"critical",
+  "urgencyLabel": "🟢 No Action Needed" or "🔴 Treat Within 48h" etc.,
+  "description": "3-4 sentence scientific diagnosis explaining exactly what plant this is and what symptoms you see.",
+  "steps": ["Step 1", "Step 2", "Step 3", "Step 4"],
+  "alts": [{"name":"Alternative Disease 1", "pct":8}, {"name":"Alternative Disease 2", "pct":4}],
+  "source": "Gemini 1.5 Vision AI"
+}`;
+
+        const imagePart = {
+            inlineData: {
+                data: imageBase64,
+                mimeType: mediaType || 'image/jpeg'
+            }
+        };
+
+        const result = await model.generateContent([prompt, imagePart]);
+        const responseText = result.response.text();
+        const cleanJson = responseText.replace(/```json|```/gi, '').trim();
+        const parsed = JSON.parse(cleanJson);
+        
+        return res.json(parsed);
 
     } catch (err) {
         console.error('Disease detection error:', err);
         return res.json({
-            status: 'Early Blight (Alternaria)',
+            status: 'Analysis Failed',
             healthy: false,
-            confidence: 78,
+            confidence: 0,
             urgency: 'high',
-            urgencyLabel: '🔴 Treat Within 48h',
-            description: 'Target-ring lesions suggest Alternaria early blight. Common in tomatoes and potatoes. Remove affected leaves and apply neem oil or copper-based fungicide.',
-            steps: ['Remove all infected leaves and bag for disposal', 'Apply neem oil spray (5ml per litre water) every 3 days', 'Avoid overhead watering – water at soil level', 'Improve air circulation around plants'],
-            alts: [{ name: 'Septoria Leaf Spot', pct: 8 }, { name: 'Bacterial Spot', pct: 4 }],
-            source: 'Fallback (network error)'
+            urgencyLabel: '🔴 Error Occurred',
+            description: 'The AI model encountered an error during analysis: ' + err.message,
+            steps: ['Check server console for details', 'Ensure your API key is valid and has credits', 'Try uploading a smaller or clearer image'],
+            alts: [],
+            source: 'Error Fallback'
         });
     }
 });
@@ -770,9 +728,15 @@ async function sendReminder(to, plantName) {
 
 // Background Task: Check for plants (Optimized for memory)
 cron.schedule('* * * * *', async () => {
-    const now = new Date();
-    const currentTimeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-    console.log(`⏰ Cron tick at ${currentTimeString} – checking reminders...`);
+    // Get current time in Indian Standard Time (IST)
+    const nowStr = new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"});
+    const nowIST = new Date(nowStr);
+    
+    // We also need a real UTC Date object to calculate diffDays for watering logic
+    const now = new Date(); 
+    
+    const currentTimeString = `${nowIST.getHours().toString().padStart(2, '0')}:${nowIST.getMinutes().toString().padStart(2, '0')}`;
+    console.log(`⏰ Cron tick at ${currentTimeString} (IST) – checking reminders...`);
 
     try {
         // Only fetch plants that need a reminder AT THIS MINUTE
